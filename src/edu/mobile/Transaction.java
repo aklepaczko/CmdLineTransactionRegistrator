@@ -5,17 +5,40 @@ public class Transaction {
     Contractor contractorA;
     Contractor contractorB;
 
-    String status;  // -1 - on creation, 0 - negotiations, 1 - in progress, 2 - completed
+    public static final int UNCONFIRMED = -1;
+    public static final int ON_NEGATIATIONS = 0;
 
-    // TODO: napisać konstruktor z 2 parametrami (kontrahenci)
-    public Transaction() {
-
+    public enum Status {
+        UNCONFIRMED,
+        ON_NEGATIATIONS,
+        IN_PROGRESS,
+        COMPLETED,
     }
 
-    public void checkValidity() {
-        // TODO: check if contractors industry is the same
-        // TODO: check if provider has enough goods to sell
-        // if ok: set status to 0
+    Status status;
+
+    public Transaction(Contractor provider, Contractor customer) {
+        contractorA = provider;
+        contractorB = customer;
+        if (checkValidity()) {
+            status = Status.ON_NEGATIATIONS;
+            provider.setInTransaction(true);
+            customer.setInTransaction(true);
+        }
+        else
+            status = Status.UNCONFIRMED;
+    }
+
+    public Transaction(Contractor provider, Contractor customer, Status status) {
+        contractorA = provider;
+        contractorB = customer;
+        provider.setInTransaction(true);
+        customer.setInTransaction(true);
+        this.status = status;
+    }
+
+    private boolean checkValidity() {
+        return contractorA.getIndustry().equalsIgnoreCase(contractorB.getIndustry());
     }
 
     public void initTransaction() {
@@ -25,4 +48,6 @@ public class Transaction {
     public void completeTransaction() {
         // set status to 2
     }
+
+    // TODO: set quantity of goods in transaction
 }
